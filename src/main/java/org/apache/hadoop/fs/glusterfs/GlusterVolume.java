@@ -304,13 +304,23 @@ public class GlusterVolume extends RawLocalFileSystem{
           try {
             results[j] = getFileStatus(fileToPath(names[i]));
             j++;
-          } catch (FileNotFoundException e) {
-        	  log.info("ignoring invisible path :  " + names[i]);
           }
+	  /**
+	   * Possible that a file in the list was removed during 
+	   * the look.
+	   */ 
+	  catch (FileNotFoundException e) {
+        	  log.warn("ignoring invisible (either recently removed, or incorrect path info) :  " + names[i] +" "+ fileToPath(names[i]) + e.getMessage());
+	  }
         }
         if (j == names.length) {
           return results;
         }
+	/**
+	 * in case some of the files were 
+	 * invisible/deleted/not found
+	 * above, then trim the array size 
+	 */
         return Arrays.copyOf(results, j);
     }
     
@@ -350,7 +360,8 @@ public class GlusterVolume extends RawLocalFileSystem{
     
     public void setPermission(Path p, FsPermission permission)
             throws IOException {
-    	super.setPermission(p,permission);
+        log.info("Setting permissions for " + p + "... to user=" + permission.getUserAction() +" group="+permission.getGroupAction()+" other="+ permission.getOtherAction());
+        super.setPermission(p,permission);
     }
 
     public BlockLocation[] getFileBlockLocations(FileStatus file,long start,long len) throws IOException{
