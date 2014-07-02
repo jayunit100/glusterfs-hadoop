@@ -354,7 +354,8 @@ public class GlusterVolume extends RawLocalFileSystem{
     
     public void setOwner(Path p, String username, String groupname)
             throws IOException {
-    	super.setOwner(p,username,groupname);
+    	log.info("Setting owner for " + p + " to " + username + " " + groupname); 
+	super.setOwner(p,username,groupname);
     	
     }
     
